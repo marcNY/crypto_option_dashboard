@@ -1,5 +1,5 @@
-from get_instruments import get_instruments
-from get_historical_data import get_historical_data
+from api.get_instruments import get_instruments
+from api.get_historical_data import get_historical_data
 import pandas as pd
 
 # Starting currency BTC ETH
@@ -7,7 +7,7 @@ import pandas as pd
 # Get all the active options on BTC
 # kind can take the argument option or future
 instruments = None
-DEBUG = True
+DEBUG = False
 if not DEBUG:
     instruments = get_instruments("BTC", kind="option", expired=False)
     print("\n instruments fields available\n")
