@@ -67,7 +67,6 @@ def get_instruments(currency, kind=None, expired=False):
     df = json_to_dataframe(resp)
     return df
 
-
 if __name__ == "__main__":
     json_resp = retrieve_instruments("BTC")
     df = json_to_dataframe(json_resp)
