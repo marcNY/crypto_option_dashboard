@@ -19,34 +19,36 @@ def get_instrument_list(crypto_analyzed, option_type_selected):
 
     return filt_inst_list
 
-
-
 @st.cache
 def get_data_compute_pnl(instrument_dict, time_period):
     data=pricing.get_historical_data(instrument_dict, time_period="1D")
     data=pricing.compute_pnl(instrument_dict, data)
     return data
 
-
+st.set_page_config(layout="wide")
 st.title("Option Dashboard")
+col1, col2 = st.columns([3,1])
 
-st.subheader("Instrument list")
 
-crypto_analyzed = st.selectbox("Bitcoin or Ethereum", ["BTC", "ETH"])
-option_type_selected = st.selectbox("Call or Put", ["call", "put"])
+
+
+col2.subheader("Instrument list")
+
+crypto_analyzed = col2.selectbox("Bitcoin or Ethereum", ["BTC", "ETH"])
+option_type_selected = col2.selectbox("Call or Put", ["call", "put"])
 
 instrument_list = get_instrument_list(crypto_analyzed, option_type_selected)
-instrument_selected = st.selectbox("Which instrument to analyze?", instrument_list.instrument_name.to_list())
+instrument_selected = col2.selectbox("Which instrument to analyze?", instrument_list.instrument_name.to_list())
 instrument_dict = instrument_list.loc[instrument_list.instrument_name ==
                                       instrument_selected].to_dict('records')[0]
 
-st.subheader("data list") 
+
 option_data=get_data_compute_pnl(instrument_dict, "1D")                         
 
 print(option_data.head())
 
 fig=graphs.create_graph1(option_data)
-st.plotly_chart(fig, use_container_width=True)
+col1.plotly_chart(fig, use_container_width=True)
 
 fig2=graphs.create_graph2(option_data)
-st.plotly_chart(fig2, use_container_width=True)
+col1.plotly_chart(fig2, use_container_width=True)
