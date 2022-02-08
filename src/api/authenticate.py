@@ -23,9 +23,9 @@ async def call_api(msg):
            return response
 
 def async_loop(api,message):
-    asyncio.get_event_loop().run_until_complete(api(message))
-
-
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    return asyncio.get_event_loop().run_until_complete(api(message))
 
 def authenticate(credentials_file='./credentials.json'):
     with open(credentials_file) as json_file:

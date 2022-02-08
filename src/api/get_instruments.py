@@ -32,8 +32,9 @@ async def call_api(msg):
 
 
 def async_loop(api, message):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     return asyncio.get_event_loop().run_until_complete(api(message))
-
 
 def retrieve_instruments(currency, kind=None, expired=False):
     if kind:

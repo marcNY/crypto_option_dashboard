@@ -33,6 +33,8 @@ async def call_api(msg):
 
 
 def async_loop(api, message):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     return asyncio.get_event_loop().run_until_complete(api(message))
 
 
@@ -48,12 +50,14 @@ def retrieve_historic_data(start, end, instrument, timeframe):
             "resolution": timeframe,
         },
     }
+    #print(msg)
     resp = async_loop(call_api, json.dumps(msg))
     return resp
 
 
 def json_to_dataframe(json_resp):
     res = json.loads(json_resp)
+    #print(res)
     df = pd.DataFrame(res["result"])
     df["timestamp"] = [dt.datetime.fromtimestamp(date / 1000) for date in df.ticks]
     return df
