@@ -80,7 +80,9 @@ pip install -r requirements.txt
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-You can interact with this code base by using the demo.ipynb Jupyter notebook
+You can interact with this code base in two ways:
+1) Use the demo.ipynb Jupyter notebook to get a good grasp of the code and logic
+2) Enter 'streamlit run src/option_dashboard.py' in the Terminal to launch the webapp.
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
