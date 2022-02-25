@@ -70,7 +70,7 @@ def get_historical_data(instrument_dict, time_period="1D"):
     data['strike']=instrument_dict["strike"] 
     return data
 
-def compute_pnl(instrument_dict, data):
+def compute_pnl(instrument_dict, data, qty=1, mult=1, is_delta_hedged = True):
     strike = instrument_dict['strike']
 
     if instrument_dict['option_type'] == 'call':
@@ -79,10 +79,9 @@ def compute_pnl(instrument_dict, data):
         option_type = 'p'
 
     r = 0.01 # This is the risk-free interest rate. For short-dated options it doesn't matter much
-    qty = 1277
-    mult = 1
-    is_delta_hedged = True
-    data['ivol_mid'] = implied_volatility(price=data['close_option'] * data['close_spot'],
+
+    
+    data['ivol_mid'] = implied_volatility(price=data['close_option'],
                                       S=data['close_spot'],
                                       K=strike,
                                       t=data['days_to_expiry']/365,
@@ -91,8 +90,13 @@ def compute_pnl(instrument_dict, data):
                                       return_as="series")
     data['delta_mid'] = py_vollib_vectorized.greeks.delta(option_type, data['close_spot'], 
             strike,data['days_to_expiry']/365, r, data[ 'ivol_mid'])
+
     data['daily_pnl_option'] = data['close_option'].diff() * qty * mult
+
     data["daily_pnl_spot"] = data['close_spot'].diff() * data['delta_mid'].shift() * qty * mult
+
     ts = data['daily_pnl_option'] - data["daily_pnl_spot"] * is_delta_hedged
+    
     data['pnl'] = ts.cumsum()
+    
     return data

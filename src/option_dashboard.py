@@ -20,9 +20,9 @@ def get_instrument_list(crypto_analyzed, option_type_selected):
     return filt_inst_list
 
 @st.cache
-def get_data_compute_pnl(instrument_dict, time_period):
+def get_data_compute_pnl(instrument_dict, time_period,qty=1,mul=1,delta_hedged=True):
     data=pricing.get_historical_data(instrument_dict, time_period="1D")
-    data=pricing.compute_pnl(instrument_dict, data)
+    data=pricing.compute_pnl(instrument_dict, data,qty,mul,delta_hedged)
     return data
 
 st.set_page_config(layout="wide")
@@ -39,11 +39,14 @@ option_type_selected = col2.selectbox("Call or Put", ["call", "put"])
 
 instrument_list = get_instrument_list(crypto_analyzed, option_type_selected)
 instrument_selected = col2.selectbox("Which instrument to analyze?", instrument_list.instrument_name.to_list())
+
+is_delta_hedged=col2.checkbox('Delta Hedge',value=True)
+
 instrument_dict = instrument_list.loc[instrument_list.instrument_name ==
                                       instrument_selected].to_dict('records')[0]
 
 
-option_data=get_data_compute_pnl(instrument_dict, "1D")                         
+option_data=get_data_compute_pnl(instrument_dict, "1D",delta_hedged=is_delta_hedged)                         
 
 print(option_data.head())
 
