@@ -41,6 +41,7 @@ instrument_list = get_instrument_list(crypto_analyzed, option_type_selected)
 instrument_selected = col2.selectbox("Which instrument to analyze?", instrument_list.instrument_name.to_list())
 
 is_delta_hedged=col2.checkbox('Delta Hedge',value=True)
+show_delta_graph=col2.checkbox('Show Delta Graph',value=False)
 
 instrument_dict = instrument_list.loc[instrument_list.instrument_name ==
                                       instrument_selected].to_dict('records')[0]
@@ -52,6 +53,8 @@ print(option_data.head())
 
 fig=graphs.create_graph1(option_data)
 col1.plotly_chart(fig, use_container_width=True)
-
+if show_delta_graph:
+    fig=graphs.create_delta_graph(option_data)
+    col1.plotly_chart(fig, use_container_width=True)
 fig2=graphs.create_graph2(option_data)
 col1.plotly_chart(fig2, use_container_width=True)
