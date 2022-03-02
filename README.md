@@ -76,7 +76,12 @@ pip install -r requirements.txt
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+### Run the app
 
+To start the dashboard once all the previous steps have been set up run the following command
+```sh
+streamlit run src/option_dashboard.py
+```
 <!-- USAGE EXAMPLES -->
 ## Usage
 
