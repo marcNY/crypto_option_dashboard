@@ -68,7 +68,7 @@ def get_historical_data(instrument_dict, time_period="1D"):
         lambda x: dt.datetime.fromtimestamp(x/1000))
 
     # we express the price of the option in USD
-    data['close_option'] = data.apply(lambda row: (
+    data['close_option_usd'] = data.apply(lambda row: (
         row['close_option'] * row['close_spot']), axis=1)
 
     expiry = dt.datetime.fromtimestamp(ts_expiration/1000)
@@ -88,7 +88,7 @@ def compute_pnl(instrument_dict, data, qty=1, mult=1, is_delta_hedged=True):
 
     r = 0.01  # This is the risk-free interest rate. For short-dated options it doesn't matter much
 
-    data['ivol_mid'] = implied_volatility(price=data['close_option'],
+    data['ivol_mid'] = implied_volatility(price=data['close_option_usd'],
                                           S=data['close_spot'],
                                           K=strike,
                                           t=data['days_to_expiry']/365,
