@@ -10,7 +10,7 @@ def create_graph1(option_data):
     # Add traces
     fig.add_trace(
         go.Scatter(x=option_data['timestamp'],
-                   y=option_data['pnl'], name="PNL"),
+                   y=option_data['pnl'], name="PnL"),
         secondary_y=True,
     )
 
@@ -85,6 +85,6 @@ def create_graph2(option_data):
     fig.update_xaxes(title_text="Date")
 
     # Set y-axes titles
-    fig.update_yaxes(title_text="Percentage", secondary_y=False)
+    fig.update_yaxes(title_text="Percentage", tickformat= ',.0%', secondary_y=False)
     fig.update_yaxes(title_text="Contracts", secondary_y=True)
     return fig
