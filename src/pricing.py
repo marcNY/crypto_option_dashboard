@@ -39,11 +39,18 @@ import api
 #  22  pnl               62 non-null     float64
 
 
-def get_historical_data(instrument_dict, time_period="1D"):
+def get_historical_data(instrument_dict, time_period="1D",day_past=None):
     ts_creation = instrument_dict["creation_timestamp"]
     ts_expiration = instrument_dict["expiration_timestamp"]
+    
+    if day_past:
+        ts_start = int((dt.datetime.now() +
+                        dt.timedelta(days=-day_past)).timestamp() * 1000)
+    else:
+        ts_start=ts_creation
 
-    option_data = api.get_historical_data(ts_creation,
+
+    option_data = api.get_historical_data(ts_start,
                                           ts_expiration,
                                           instrument_dict["instrument_name"],
                                           time_period)

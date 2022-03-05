@@ -49,15 +49,55 @@ def get_instrument_list(crypto_analyzed, option_type_selected):
                                          option_type_selected].sort_values(by=["expiration_time", "strike"])
     # filt_inst_list.strike=filt_inst_list.strike.apply(round)
     # filt_inst_list.expiration_time=filt_inst_list.expiration_time.dt.date
-    print(instrument_list.info())
     return filt_inst_list
 
 
 @st.cache
-def get_data_compute_pnl(instrument_dict, time_period, qty=1, mul=1, delta_hedged=True):
-    data = pricing.get_historical_data(instrument_dict, time_period="1D")
+def get_data_compute_pnl(instrument_dict, time_period, qty=1, mul=1, delta_hedged=True,day_past=None):
+    data = pricing.get_historical_data(instrument_dict, time_period,day_past)
     data = pricing.compute_pnl(instrument_dict, data, qty, mul, delta_hedged)
     return data
+
+
+
+@st.cache
+def get_option_data(instrument_dict, time_period):
+    data = pricing.get_historical_data(instrument_dict, time_period)
+    return data
+
+
+# Data columns (total 20 columns):
+#  #   Column            Non-Null Count  Dtype          
+# ---  ------            --------------  -----          
+#  0   volume_option     38 non-null     float64        
+#  1   ticks             38 non-null     int64          
+#  2   status_option     38 non-null     object         
+#  3   open_option       38 non-null     float64        
+#  4   low_option        38 non-null     float64        
+#  5   high_option       38 non-null     float64        
+#  6   cost_option       38 non-null     float64        
+#  7   close_option      38 non-null     float64        
+#  8   volume_spot       38 non-null     float64        
+#  9   status_spot       38 non-null     object         
+#  10  open_spot         38 non-null     float64        
+#  11  low_spot          38 non-null     float64        
+#  12  high_spot         38 non-null     float64        
+#  13  cost_spot         38 non-null     float64        
+#  14  close_spot        38 non-null     float64        
+#  15  timestamp         38 non-null     datetime64[ns] 
+#  16  close_option_usd  38 non-null     float64        
+#  17  time_to_expiry    38 non-null     timedelta64[ns]
+#  18  days_to_expiry    38 non-null     int64          
+#  19  strike            38 non-null     int64  
+def filter_and_compute_pnl(instrument_dict, historical_data, qty=1, mul=1, delta_hedged=True, day_past=None):
+    if day_past:
+        ts_start = int((datetime.datetime.now() +
+                       datetime.timedelta(days=-day_past)).timestamp() * 1000)
+        historical_data = historical_data.loc[historical_data.ticks > ts_start]
+    data = pricing.compute_pnl(
+        instrument_dict, historical_data, qty, mul, delta_hedged)
+    return data
+
 
 
 
@@ -89,7 +129,7 @@ def last_timestamp_this_month(instrument_list):
 expiration_timestamps_arr = instrument_list.expiration_time.unique()
 index_max_this_month = int(np.where(
     expiration_timestamps_arr == last_timestamp_this_month(instrument_list))[0][0])
-print(index_max_this_month)
+
 expiration_timestamp_selected = col2.selectbox("Which expiration date?",
                                                instrument_list.expiration_timestamp.unique(),
                                                index=index_max_this_month,
@@ -110,25 +150,30 @@ def get_closest_strike_index(instrument_list, crypto_analyzed, expiration_timest
     instrument_list, crypto_analyzed, expiration_timestamp_selected)
 strike_selected = col2.selectbox(
     "Which Strike?", strike_list, index=strike_index)
-
+## initial investment?
+initial_quantity_usd=col2.number_input("Initial Investment in USD", min_value=1, value=10000, step=1)
+initial_quantity=initial_quantity_usd/api.get_index_price(crypto_analyzed)
 ## instrument selected
 instrument_selected = instrument_list.loc[(instrument_list.expiration_timestamp==expiration_timestamp_selected) & (instrument_list.strike==strike_selected)].instrument_name.iloc[0]
 
-col2.write("instrument selected:  "+instrument_selected)
+
 
 
 ## different opton necessary
+previous_day_selected=col2.selectbox("How many days in the past?",[None,30,60,90],index=2,format_func=lambda x: str(x) + " days" if x else "all")
 is_delta_hedged=col2.checkbox('Delta Hedge',value=True)
 show_delta_graph=col2.checkbox('Show Delta Graph',value=False)
-previous_day_selected=col2.selectbox("How many days in the past?",[None,30,60,90],index=2,format_func=lambda x: str(x) + " days" if x else "all")
+col2.write("instrument selected:  "+instrument_selected)
+
+
 instrument_dict = instrument_list.loc[instrument_list.instrument_name ==
                                       instrument_selected].to_dict('records')[0]
 
 
 ## pricing
-option_data=get_data_compute_pnl(instrument_dict, "1D",delta_hedged=is_delta_hedged)
 
-print(option_data.head())
+option_data=get_data_compute_pnl(instrument_dict, "1D", qty=initial_quantity, mul=1, delta_hedged=is_delta_hedged,day_past=previous_day_selected)
+
 
 fig=graphs.create_graph1(option_data)
 col1.plotly_chart(fig, use_container_width=True)
