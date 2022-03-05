@@ -50,8 +50,8 @@ def get_instrument_list(crypto_analyzed, option_type_selected):
 
 @st.cache
 def get_data_compute_pnl(instrument_dict, time_period,qty=1,mul=1,delta_hedged=True):
-    data=pricing.get_historical_data(instrument_dict, time_period="1D")
-    data=pricing.compute_pnl(instrument_dict, data,qty,mul,delta_hedged)
+    data = pricing.get_historical_data(instrument_dict, time_period="1D")
+    data = pricing.compute_pnl(instrument_dict, data,qty,mul,delta_hedged)
     return data
 
 
@@ -86,14 +86,14 @@ instrument_dict = instrument_list.loc[instrument_list.instrument_name ==
                                       instrument_selected].to_dict('records')[0]
 
 
-option_data=get_data_compute_pnl(instrument_dict, "1D",delta_hedged=is_delta_hedged)                         
+option_data = get_data_compute_pnl(instrument_dict, "1D", delta_hedged=is_delta_hedged)                         
 
 print(option_data.head())
 
-fig=graphs.create_graph1(option_data)
+fig = graphs.create_graph1(option_data)
 col1.plotly_chart(fig, use_container_width=True)
 if show_delta_graph:
-    fig=graphs.create_delta_graph(option_data)
+    fig = graphs.create_delta_graph(option_data)
     col1.plotly_chart(fig, use_container_width=True)
-fig2=graphs.create_graph2(option_data)
+fig2 = graphs.create_graph2(option_data)
 col1.plotly_chart(fig2, use_container_width=True)

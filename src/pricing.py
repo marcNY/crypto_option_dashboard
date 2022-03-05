@@ -98,7 +98,7 @@ def compute_pnl(instrument_dict, data, qty=1, mult=1, is_delta_hedged=True):
     data['delta_mid'] = py_vollib_vectorized.greeks.delta(option_type, data['close_spot'],
                                                           strike, data['days_to_expiry']/365, r, data['ivol_mid'])
 
-    data['daily_pnl_option'] = data['close_option'].diff() * qty * mult
+    data['daily_pnl_option'] = data['close_option_usd'].diff() * qty * mult
 
     data["daily_pnl_spot"] = data['close_spot'].diff(
     ) * data['delta_mid'].shift() * qty * mult
