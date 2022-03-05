@@ -11,18 +11,18 @@ def create_graph1(option_data):
     fig.add_trace(
         go.Scatter(x=option_data['timestamp'],
                    y=option_data['pnl'], name="PNL"),
-        secondary_y=False,
+        secondary_y=True,
     )
 
     fig.add_trace(
         go.Scatter(x=option_data['timestamp'],
                    y=option_data['close_spot'], name="BTC PRICE"),
-        secondary_y=True,
+        secondary_y=False,
     )
     fig.add_trace(
         go.Scatter(x=option_data['timestamp'],
                    y=option_data['strike'], name="STRIKE"),
-        secondary_y=True,
+        secondary_y=False,
     )
 
     # Add figure title
@@ -35,7 +35,7 @@ def create_graph1(option_data):
 
     # Set y-axes titles
     fig.update_yaxes(title_text="USD", secondary_y=False)
-    fig.update_yaxes(title_text="USD", secondary_y=True)
+    fig.update_yaxes(title_text="PnL", secondary_y=True)
     return fig
 
 
@@ -74,6 +74,7 @@ def create_graph2(option_data):
                y=option_data['volume_option'], name="VOLUME"),
         secondary_y=True,
     )
+    #fig.update_layout(yaxis_tickformat = '%',secondary_y=False)
 
     # Add figure title
     fig.update_layout(
