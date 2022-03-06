@@ -16,7 +16,7 @@ def create_graph1(option_data):
 
     fig.add_trace(
         go.Scatter(x=option_data['timestamp'],
-                   y=option_data['close_spot'], name="BTC PRICE"),
+                   y=option_data['close_spot'], name="BTCUSD"),
         secondary_y=False,
     )
     fig.add_trace(
@@ -27,15 +27,15 @@ def create_graph1(option_data):
 
     # Add figure title
     fig.update_layout(
-        title_text="PNL graph"
+        title_text="PnL graph \U0001F4B0"
     )
 
     # Set x-axis title
     fig.update_xaxes(title_text="Date")
 
     # Set y-axes titles
-    fig.update_yaxes(title_text="USD", secondary_y=False)
-    fig.update_yaxes(title_text="PnL", secondary_y=True)
+    fig.update_yaxes(title_text="BTCUSD", secondary_y=False)
+    fig.update_yaxes(title_text="$ PnL", secondary_y=True)
     return fig
 
 

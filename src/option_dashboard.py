@@ -15,6 +15,9 @@ import datetime
 
 
 
+st.set_page_config(layout="wide")
+gif_runner = st.image('images/loading.gif')
+
 # Output
 # Data columns (total 22 columns):
 #  #   Column                  Non-Null Count  Dtype
@@ -99,10 +102,6 @@ def filter_and_compute_pnl(instrument_dict, historical_data, qty=1, mul=1, delta
     return data
 
 
-
-
-st.set_page_config(layout="wide")
-
 col1, col2 = st.columns([3, 1])
 
 
@@ -130,7 +129,7 @@ expiration_timestamps_arr = instrument_list.expiration_time.unique()
 index_max_this_month = int(np.where(
     expiration_timestamps_arr == last_timestamp_this_month(instrument_list))[0][0])
 
-expiration_timestamp_selected = col2.selectbox("Which expiration date?",
+expiration_timestamp_selected = col2.selectbox("Expiration date",
                                                instrument_list.expiration_timestamp.unique(),
                                                index=index_max_this_month,
                                                format_func=lambda x: datetime.datetime.fromtimestamp(x/1000).strftime("%d %b %Y"))
@@ -149,10 +148,10 @@ def get_closest_strike_index(instrument_list, crypto_analyzed, expiration_timest
 (strike_list, strike_index) = get_closest_strike_index(
     instrument_list, crypto_analyzed, expiration_timestamp_selected)
 strike_selected = col2.selectbox(
-    "Which Strike?", strike_list, index=strike_index)
+    "Strike of the option", strike_list, index=strike_index)
 ## initial investment?
-initial_quantity_usd=col2.number_input("Initial Investment in USD", min_value=1, value=10000, step=1)
-initial_quantity=initial_quantity_usd/api.get_index_price(crypto_analyzed)
+initial_quantity_usd = col2.number_input("Initial Investment in USD", min_value=1, value=10000, step=1)
+initial_quantity = initial_quantity_usd/api.get_index_price(crypto_analyzed)
 ## instrument selected
 instrument_selected = instrument_list.loc[(instrument_list.expiration_timestamp==expiration_timestamp_selected) & (instrument_list.strike==strike_selected)].instrument_name.iloc[0]
 
@@ -160,9 +159,9 @@ instrument_selected = instrument_list.loc[(instrument_list.expiration_timestamp=
 
 
 ## different opton necessary
-previous_day_selected=col2.selectbox("How many days in the past?",[None,30,60,90],index=2,format_func=lambda x: str(x) + " days" if x else "all")
-is_delta_hedged=col2.checkbox('Delta Hedge',value=True)
-show_delta_graph=col2.checkbox('Show Delta Graph',value=False)
+previous_day_selected = col2.selectbox("How many days in the past?",[None,30,60,90],index=2,format_func=lambda x: str(x) + " days" if x else "all")
+is_delta_hedged = col2.checkbox('Delta Hedge',value=True)
+show_delta_graph = col2.checkbox('Show Delta Graph',value=False)
 col2.write("instrument selected:  "+instrument_selected)
 
 
@@ -172,13 +171,16 @@ instrument_dict = instrument_list.loc[instrument_list.instrument_name ==
 
 ## pricing
 
-option_data=get_data_compute_pnl(instrument_dict, "1D", qty=initial_quantity, mul=1, delta_hedged=is_delta_hedged,day_past=previous_day_selected)
+option_data = get_data_compute_pnl(instrument_dict, "1D", qty=initial_quantity, mul=1, delta_hedged=is_delta_hedged,day_past=previous_day_selected)
 
 
-fig=graphs.create_graph1(option_data)
+fig = graphs.create_graph1(option_data)
 col1.plotly_chart(fig, use_container_width=True)
 if show_delta_graph:
-    fig=graphs.create_delta_graph(option_data)
+    fig = graphs.create_delta_graph(option_data)
     col1.plotly_chart(fig, use_container_width=True)
-fig2=graphs.create_graph2(option_data)
+fig2 = graphs.create_graph2(option_data)
 col1.plotly_chart(fig2, use_container_width=True)
+
+
+gif_runner.empty()
