@@ -16,7 +16,7 @@ import datetime
 
 
 st.set_page_config(layout="wide")
-gif_runner = st.image('images/loading.gif')
+
 
 # Output
 # Data columns (total 22 columns):
@@ -167,20 +167,18 @@ col2.write("instrument selected:  "+instrument_selected)
 
 instrument_dict = instrument_list.loc[instrument_list.instrument_name ==
                                       instrument_selected].to_dict('records')[0]
-
-
 ## pricing
-
+#if_runner = col1.image('images/loading.gif')
 option_data = get_data_compute_pnl(instrument_dict, "1D", qty=initial_quantity, mul=1, delta_hedged=is_delta_hedged,day_past=previous_day_selected)
 
 
-fig = graphs.create_graph1(option_data)
+fig = graphs.create_graph1(option_data, instrument_dict["quote_currency"]+instrument_dict["counter_currency"],is_delta_hedged)
 col1.plotly_chart(fig, use_container_width=True)
 if show_delta_graph:
     fig = graphs.create_delta_graph(option_data)
     col1.plotly_chart(fig, use_container_width=True)
-fig2 = graphs.create_graph2(option_data)
+fig2 = graphs.create_graph2(option_data, instrument_dict["quote_currency"]+instrument_dict["counter_currency"])
 col1.plotly_chart(fig2, use_container_width=True)
 
 
-gif_runner.empty()
+#gif_runner.empty()
